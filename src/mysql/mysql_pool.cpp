@@ -7,6 +7,7 @@
 MysqlPool* MysqlPool::mysqlPoolInstance = NULL;
 
 MysqlPool* MysqlPool::GetInstance(const char* host, const char* user, const char* passwd, const char* db, int maxSize) {
+	//std::cout << host << " " << user << " " << passwd << " " << db << " " << maxSize << std::endl; 
     if (NULL == mysqlPoolInstance)
         mysqlPoolInstance = new MysqlPool(host, user, passwd, db, maxSize);
 

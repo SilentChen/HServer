@@ -9,9 +9,61 @@
 #include "json/json.h"
 #include "mysql/mysql_pool.h"
 
+#include <fstream>
+#include <iostream>
+
 using namespace HServer;
 
-MysqlPool* mypoolInstance = MysqlPool::GetInstance("127.0.0.1","root","root","test",10);
+
+struct cfg_mysql {
+	char* host;
+	char* user;
+	char* passwd;
+	char* dbname;
+}g_cfg_mysql;
+
+MysqlPool* mypoolInstance;
+
+void writeJson();
+
+void loadConfig() {
+	ifstream ifs;
+	ifs.open("config/app.config");
+	if(!ifs.is_open()) 
+	{
+		cout << "fail to open file" << endl;
+		return;
+	}
+	Json::Reader jsonReader;
+	Json::Value value;
+	if (jsonReader.parse(ifs, value)) 
+	{
+		g_cfg_mysql.host	= new char[value["mysql"]["host"].asString().length()];
+		strcpy(g_cfg_mysql.host, value["mysql"]["host"].asString().c_str());
+
+		g_cfg_mysql.user	 = new char[value["mysql"]["user"].asString().length()];
+		strcpy(g_cfg_mysql.user, value["mysql"]["usr"].asString().c_str());
+
+		g_cfg_mysql.passwd	= new char[value["mysql"]["passwd"].asString().length()];
+		strcpy(g_cfg_mysql.passwd, value["mysql"]["passwd"].asString().c_str());
+
+		g_cfg_mysql.dbname	= new char[value["mysql"]["dbname"].asString().length()];
+		strcpy(g_cfg_mysql.dbname, value["mysql"]["dbname"].asString().c_str());
+	}
+}
+
+
+
+int main() {
+	loadConfig();
+	mypoolInstance = MysqlPool::GetInstance(g_cfg_mysql.host, g_cfg_mysql.user, g_cfg_mysql.passwd, g_cfg_mysql.dbname, 10);
+    writeJson();
+	// HTTP 服务运行在 12345 端口，并启用四个线程
+	Server<HTTP> server(12345, 4);
+	start_server<Server<HTTP>>(server);
+
+	return 0;
+}
 
 void writeJson() {
     Json::Value data1;
@@ -48,30 +100,4 @@ void writeJson() {
     data2.toStyledString();
     std::string out2 = data2.toStyledString();
     std::cout << out2 << std::endl;
-
-   /* Json::Value root;
-    Json::Value arrayObj;
-    Json::Value item;
-
-    item["cpp"] = "jsoncpp";
-    item["java"] = "jsoninjava";
-    item["php"] = "support";
-    arrayObj.append(item);
-
-    root["name"] = "json";
-    root["array"] = arrayObj;
-
-    root.toStyledString();
-    std::string out = root.toStyledString();
-    std::cout << out << std::endl;*/
-}
-
-
-int main() {
-    writeJson();
-	// HTTP 服务运行在 12345 端口，并启用四个线程
-	Server<HTTP> server(12345, 4);
-	start_server<Server<HTTP>>(server);
-
-	return 0;
 }

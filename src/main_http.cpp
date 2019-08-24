@@ -11,7 +11,7 @@
 
 using namespace HServer;
 
-MysqlPool* mypoolInstance = MysqlPool::GetInstance("106.12.130.31","qz","qwer","arpg",10);
+MysqlPool* mypoolInstance = MysqlPool::GetInstance("127.0.0.1","root","root","test",10);
 
 void writeJson() {
     Json::Value data1;
@@ -22,7 +22,14 @@ void writeJson() {
     MYSQL* conn = mypoolInstance -> GetConnection();
     const char* sql = "select pkey,nickname,lv,vip_lv from player_state";
     int state = mysql_real_query(conn, sql, strlen(sql));
+	if (state > 0) 
+	{
+		cout << "error occur: " << mysql_error(conn) << endl;
+		return;
+	}
+	cout << "query return state is: " << state << endl;
     MYSQL_RES* res = mysql_store_result(conn);
+	cout << "row count is: " << res -> row_count << endl;
     int i,j = 0;
     while (myrow = mysql_fetch_row(res)) {
         for (i=0; i < res->field_count; i++)

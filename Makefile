@@ -6,7 +6,7 @@ CC = g++
 INCLUDES = -I include -I /usr/local/mysql/include
 LIBS = -lpthread -lboost_system -lmysqlclient
 CFLAGS = -Wall -g -std=c++11 -O3
-LINKFLAGS = -L /usr/local/mysql/lib
+LINKFLAGS = -L /usr/local/mysql/lib -L /usr/local/boost/stage/lib
 
 SRCDIR = src src/mysql src/json
 
@@ -52,4 +52,4 @@ install:
 uninstall:
 	rm -f $(BIN_PATH) / $(TARGET)
 
-rebuild: clean compile
+rebuild: clean init compile install

@@ -22,6 +22,12 @@ struct cfg_mysql {
 	char* dbname;
 }g_cfg_mysql;
 
+typedef cfg_mysql cfg_mysql;
+
+struct cfg {
+	cfg_mysql mysql;
+}g_cfg;
+
 MysqlPool* mypoolInstance;
 
 void writeJson();

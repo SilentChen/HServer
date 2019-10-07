@@ -1,18 +1,26 @@
 
 // main_http.cpp
 // web_server
-// created by changkun at shiyanlou.com
+// created by silent at silent.com
 //
 
 #include "server_http.hpp"
 #include "handler.hpp"
 #include "json/json.h"
 #include "mysql/mysql_pool.h"
+#include "reflect_func.h"
 
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <string>
+
+#include "flutter/home.hpp"
 
 using namespace HServer;
+
+void init();
+void registerFunc();
 
 
 struct cfg_mysql {
@@ -20,12 +28,21 @@ struct cfg_mysql {
 	char* user;
 	char* passwd;
 	char* dbname;
-}g_cfg_mysql;
+	int pool_num;
+};
 
 typedef cfg_mysql cfg_mysql;
 
+struct cfg_http {
+	int port;
+	int thread_num;
+};
+
+typedef cfg_http cfg_http;;
+
 struct cfg {
 	cfg_mysql mysql;
+	cfg_http  http;
 }g_cfg;
 
 MysqlPool* mypoolInstance;
@@ -44,31 +61,46 @@ void loadConfig() {
 	Json::Value value;
 	if (jsonReader.parse(ifs, value)) 
 	{
-		g_cfg_mysql.host	= new char[value["mysql"]["host"].asString().length()];
-		strcpy(g_cfg_mysql.host, value["mysql"]["host"].asString().c_str());
+		// cout << "json load is: " << value.toStyledString() << endl;
+		g_cfg.mysql.host	= new char[value["mysql"]["host"].asString().length()];
+		strcpy(g_cfg.mysql.host, value["mysql"]["host"].asString().c_str());
 
-		g_cfg_mysql.user	 = new char[value["mysql"]["user"].asString().length()];
-		strcpy(g_cfg_mysql.user, value["mysql"]["usr"].asString().c_str());
+		g_cfg.mysql.user	 = new char[value["mysql"]["user"].asString().length()];
+		strcpy(g_cfg.mysql.user, value["mysql"]["usr"].asString().c_str());
 
-		g_cfg_mysql.passwd	= new char[value["mysql"]["passwd"].asString().length()];
-		strcpy(g_cfg_mysql.passwd, value["mysql"]["passwd"].asString().c_str());
+		g_cfg.mysql.passwd	= new char[value["mysql"]["passwd"].asString().length()];
+		strcpy(g_cfg.mysql.passwd, value["mysql"]["passwd"].asString().c_str());
 
-		g_cfg_mysql.dbname	= new char[value["mysql"]["dbname"].asString().length()];
-		strcpy(g_cfg_mysql.dbname, value["mysql"]["dbname"].asString().c_str());
+		g_cfg.mysql.dbname	= new char[value["mysql"]["dbname"].asString().length()];
+		strcpy(g_cfg.mysql.dbname, value["mysql"]["dbname"].asString().c_str());
+
+		g_cfg.mysql.pool_num = value["mysql"]["pool_num"].asInt();
+
+		g_cfg.http.port = value["http"]["port"].asInt();
+		g_cfg.http.thread_num = value["http"]["thread_num"].asInt();
 	}
 }
 
 
 
 int main() {
-	loadConfig();
-	mypoolInstance = MysqlPool::GetInstance(g_cfg_mysql.host, g_cfg_mysql.user, g_cfg_mysql.passwd, g_cfg_mysql.dbname, 10);
+	init();
+	mypoolInstance = MysqlPool::GetInstance(g_cfg.mysql.host, g_cfg.mysql.user, g_cfg.mysql.passwd, g_cfg.mysql.dbname, g_cfg.mysql.pool_num);
     writeJson();
 	// HTTP 服务运行在 12345 端口，并启用四个线程
-	Server<HTTP> server(12345, 4);
+	Server<HTTP> server(g_cfg.http.port, g_cfg.http.thread_num);
 	start_server<Server<HTTP>>(server);
 
 	return 0;
+}
+
+void init() {
+	registerFunc();
+	loadConfig();
+}
+
+void registerFunc() {
+	REGISTER_FUNC(FlutterHome_index);
 }
 
 void writeJson() {

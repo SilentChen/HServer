@@ -6,6 +6,7 @@
 
 #include "server_base.hpp"
 #include <fstream>
+#include "reflect_func.h"
 
 using namespace std;
 using namespace HServer;
@@ -44,6 +45,31 @@ void start_server(SERVER_TYPE &server) {
 	server.resource["^/match/([0-9a-zA-Z]+)/?$"]["GET"] = [](ostream& response, Request& request) {
 		string number=request.path_match[1];
 		response << "HTTP/1.1 200 OK\r\nContent-Length: " << number.length() << "\r\n\r\n" << number;
+	};
+
+	server.resource["^/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)/?$"]["GET"] = [](ostream& response, Request& request){
+		string service= request.path_match[1];
+		string module = request.path_match[2];
+		string method = request.path_match[3];
+
+		service = service.empty() ? "Flutter" : service;
+		module  = module.empty() ? "Home" : module;
+		method  = method.empty() ? "index" : method;
+
+		string funcName = service + module + "_" + method;
+		string content;
+		void* tmp = INVOKE_FUNC(funcName);
+		printf("tmp1 is: %s", (char*)tmp);
+		if(NULL == tmp) {
+			content = "bad request: " + funcName;
+		}else{
+			content = (char*)tmp; 
+			delete(tmp);
+			//printf("tmp2 is: %s", (char*)tmp);
+		}
+
+
+		response << "HTTP/1.1 200 OK\r\nContent-Length: " << content.length() << "\r\n\r\n" << content;
 	};
 
 	// 处理默认 GET 请求, 如果没有其他匹配成功，则这个匿名函数会被调用

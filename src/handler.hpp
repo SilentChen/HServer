@@ -52,14 +52,9 @@ void start_server(SERVER_TYPE &server) {
 		string module = request.path_match[2];
 		string method = request.path_match[3];
 
-		service = service.empty() ? "Flutter" : service;
-		module  = module.empty() ? "Home" : module;
-		method  = method.empty() ? "index" : method;
-
 		string funcName = service + module + "_" + method;
 		string content;
 		void* tmp = INVOKE_FUNC(funcName);
-		printf("tmp1 is: %s", (char*)tmp);
 		if(NULL == tmp) {
 			content = "bad request: " + funcName;
 		}else{

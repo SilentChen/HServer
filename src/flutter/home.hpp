@@ -11,6 +11,7 @@ void* FlutterHome_index() {
 	Json::Value cate;
 	Json::Value	ad;
 	Json::Value shopInfo;
+	Json::Value recommend;
 	Json::Value item;
 
 	// slides for slides
@@ -82,10 +83,24 @@ void* FlutterHome_index() {
 	shopInfo["callPic"] = "https://i0.hdslb.com/bfs/bangumi/image/e5e41166cd7eabaa1dde157f4e98473571a56990.jpg@2320w_664h.jpg";
 	shopInfo["callNum"] = "15902069589";
 
+	// recomend setting
+	// reset item
+	item.removeMember("image");
+	item.removeMember("cateName");
+	item["price"]	= "123";
+	item["image"]	= "http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg?param=100y100";
+	item["mailprice"]="321";
+	recommend.append(item);
+	recommend.append(item);
+	recommend.append(item);
+	recommend.append(item);
+	recommend.append(item);
+
 	data["slides"]	= slides;
 	data["cate"]	= cate;
 	data["ad"]		= ad;
 	data["shopInfo"]= shopInfo;
+	data["recommend"]=recommend;
 	object["data"]	= data;
 
 	char* ret;

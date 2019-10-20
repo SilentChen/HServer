@@ -1,6 +1,6 @@
 #!/bin/bash  
 CMD=$1
-APP_NAME=http_server
+APP_NAME=server_http
 BIN_PATH=./bin
 LOG_PATH=./var/log
 RUN_PATH=./var/run

@@ -100,13 +100,30 @@ help:
 	@echo " |- http: make http target"
 	@echo " |- https:make https target"
 	@echo " |- all:  make all target [defaule]"
+	@echo " |- rebuild: clean and make"
+	@echo " |- rebuild_http: clean http and make http"
+	@echo " |- rebuild_https: clean https and make https"
 
 http: init server_http
 
 https: init server_https
+
+rebuild: clean all
+
+rebuild_http: clean_http server_http
+
+rebuild_https: clean_https server_https
 
 .PHONE: clean
 
 clean:
 	rm -rf $(OBJ_PATH)
 	rm -rf $(BIN_PATH)/*
+
+clean_http:
+	rm -rf $(OBJ_PATH)
+	rm -rf $(BIN_PATH)/$(TARGET_HTTP)
+
+clean_https:
+	rm -rf $(OBJ_PATH)
+	rm -rf $(BIN_PATH)/$(TARGET_HTTPS)

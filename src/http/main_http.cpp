@@ -37,7 +37,7 @@ struct cfg_http {
 	int thread_num;
 };
 
-typedef cfg_http cfg_http;;
+typedef cfg_http cfg_http;
 
 struct cfg {
 	cfg_mysql mysql;

@@ -1,3 +1,8 @@
+// main_https.cpp
+// web_server
+// created by silent at silent.com
+//
+
 #include "server_https.hpp"
 #include "handler.hpp"
 #include "json/json.h"
@@ -15,7 +20,6 @@ using namespace HServer;
 
 void init();
 void registerFunc();
-void writeJson();
 
 
 struct cfg_mysql {
@@ -42,6 +46,8 @@ struct cfg {
 }g_cfg;
 
 MysqlPool* mypoolInstance;
+
+void writeJson();
 
 void loadConfig() {
 	ifstream ifs;
@@ -70,21 +76,22 @@ void loadConfig() {
 
 		g_cfg.mysql.pool_num = value["mysql"]["pool_num"].asInt();
 
-		g_cfg.https.port = value["https"]["port"].asInt();
-		g_cfg.https.thread_num = value["https"]["thread_num"].asInt();
-        g_cfg.https.cert_path  = new char[value["https"]["cert_path"].asString().length()];
-        strcpy(g_cfg.https.cert_path, value["https"]["cert_path"].asString().c_str());
+		g_cfg.https.port = value["http"]["port"].asInt();
+		g_cfg.https.thread_num = value["http"]["thread_num"].asInt();
 	}
 }
 
+
+
 int main() {
-    init();
-    mypoolInstance = MysqlPool::GetInstance(g_cfg.mysql.host, g_cfg.mysql.user, g_cfg.mysql.passwd, g_cfg.mysql.dbname, g_cfg.mysql.pool_num);
+	init();
+	mypoolInstance = MysqlPool::GetInstance(g_cfg.mysql.host, g_cfg.mysql.user, g_cfg.mysql.passwd, g_cfg.mysql.dbname, g_cfg.mysql.pool_num);
     writeJson();
-    std::cout << g_cfg.https.cert_path << std::endl;
-    Server<HTTPS> server(g_cfg.https.port, g_cfg.https.thread_num, "aaa", "bbb");
-    start_server<Server<HTTPS>>(server);
-    return 0;
+	// HTTP 服务运行在 12345 端口，并启用四个线程
+	Server<HTTPS> server(g_cfg.https.port, g_cfg.https.thread_num, "aaa", "bbb");
+	start_server<Server<HTTPS>>(server);
+
+	return 0;
 }
 
 void init() {

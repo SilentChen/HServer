@@ -1,7 +1,7 @@
 .idea
 .vscode
-bin/
-objs/
-config/
+bin/*
+build/*
+config/*
 var/log/*
 var/run/*

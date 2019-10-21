@@ -1,1 +1,20 @@
 https://blog.csdn.net/I_love_blog/article/details/70168213
+
+A static lib creating:
+|
+|_  1 g++ -c StaticMath.cpp create *.o file
+|
+|_  2 ar -crv libstaticmath.a StaticMath.o create *.a static lib file
+|
+|_  3 g++ main.cpp -L ../lib_dir -lstaticmath to create executable binary file
+|
+B dynamic lib creating:
+|
+|_ 1 g++ -fPIC -c DynamicTest.cpp create *.o file
+|
+|_ 2 g++ -shared -o libdynamictest.so DynamicTest.o create so file
+|
+|- [ notice: g++ -fPIC -shared -o libdynamictest.so DynamicTest.cpp  ]
+|
+|_ 3 g++ main.cpp -L ../dynamic/ -ldynamictest -o dynamictest.exec
+

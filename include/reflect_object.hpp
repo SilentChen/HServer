@@ -1,6 +1,20 @@
 #ifndef REFLECT_OBJECT_H
 #define REFLECT_OBJECT_H
 
+#define REGISTER_CLASS(class_name) \
+	class class_name##Helper { \
+		public: \
+				class_name##Helper() \
+		{ \
+			CObjectFactory::registerClass(#class_name, class_name##Helper::creatObjFunc); \
+		} \
+		static void* creatObjFunc() \
+		{ \
+			return new class_name; \
+		} \
+	}; \
+class_name##Helper class_name##helper;
+
 #include <string>
 #include <map>
 
@@ -34,21 +48,5 @@ class CObjectFactory
 			return instance;
 		}
 };
-
-
-#define REGISTER_CLASS(class_name) \
-	class class_name##Helper { \
-		public: \
-				class_name##Helper() \
-		{ \
-			CObjectFactory::registerClass(#class_name, class_name##Helper::creatObjFunc); \
-		} \
-		static void* creatObjFunc() \
-		{ \
-			return new class_name; \
-		} \
-	}; \
-class_name##Helper class_name##helper;
-
 
 #endif

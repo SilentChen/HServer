@@ -6,7 +6,7 @@
 
 #include "server_base.hpp"
 #include <fstream>
-#include "reflect_func.h"
+#include "reflect_func.hpp"
 
 using namespace std;
 using namespace HServer;

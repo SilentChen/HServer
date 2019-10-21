@@ -54,7 +54,7 @@ void start_server(SERVER_TYPE &server) {
 
 		string funcName = service + module + "_" + method;
 		string content;
-		void* tmp = INVOKE_FUNC(funcName);
+		void* tmp = FUNC_INVOKE(funcName);
 		if(NULL == tmp) {
 			content = "bad request: " + funcName;
 		}else{

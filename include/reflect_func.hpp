@@ -1,8 +1,8 @@
 #ifndef REFLECT_FUNC_H
 #define REFLECT_FUNC_H
 
-#define REGISTER_FUNC(func_name) ReflectFuncFactory::registerFunc(#func_name, &func_name)
-#define INVOKE_FUNC(func_name) ReflectFuncFactory::invoke(func_name)
+#define FUNC_REGISTER(func_name) ReflectFuncFactory::registerFunc(#func_name, &func_name)
+#define FUNC_INVOKE(func_name) ReflectFuncFactory::invoke(func_name)
 
 #include <string>
 #include <map>

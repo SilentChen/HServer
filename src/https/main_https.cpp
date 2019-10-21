@@ -98,7 +98,7 @@ void init() {
 }
 
 void registerFunc() {
-	REGISTER_FUNC(FlutterHome_index);
+	FUNC_REGISTER(FlutterHome_index);
 }
 
 void writeJson() {

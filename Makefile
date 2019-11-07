@@ -1,9 +1,9 @@
-## Base setting
+# Base setting
 CC					=	g++
 OBJ_PATH			=	build
 BIN_PATH			=	bin
 
-## Target's common setting
+# Target's common setting
 FLAGS_COMMON		=	-Wall -g -std=c++11 -O3
 INCLUDE_COMMON		=	-I include -I src/lib/public -I src/flutter/public -I/usr/local/mysql/include -I/usr/include/boost
 LIBNAME_COMMON		=	-lpthread -lboost_system -lmysqlclient
@@ -14,7 +14,7 @@ C_OBJECT_COMMON		=	$(patsubst %.c, $(OBJ_PATH)/%.o, $(C_SOURCE_COMMON))
 CPP_SOURCE_COMMON	=	$(foreach d, $(SRCDIR_COMMON), $(wildcard $(d)/*.cpp))
 CPP_OBJECT_COMMON	=	$(patsubst %.cpp, $(OBJ_PATH)/%.o, $(CPP_SOURCE_COMMON))
 
-## Target HTTP setting
+# Target HTTP setting
 TARGET_HTTP			=	server_http
 FLAGS_HTTP			=	
 INCLUDE_HTTP		=
@@ -26,7 +26,7 @@ C_OBJECT_HTTP		=	$(patsubst %.c, $(OBJ_PATH)/%.o, $(C_SOURCE_HTTP))
 CPP_SOURCE_HTTP		=	$(foreach d, $(SRCDIR_HTTP), $(wildcard $(d)/*.cpp))
 CPP_OBJECT_HTTP		=	$(patsubst %.cpp, $(OBJ_PATH)/%.o, $(CPP_SOURCE_HTTP))
 
-## Target HTTPS setting
+# Target HTTPS setting
 TARGET_HTTPS		=	server_https
 FLAGS_HTTPS			=	
 INCLUDE_HTTPS		=	-I/usr/include/openssl
@@ -38,13 +38,14 @@ C_OBJECT_HTTPS		=	$(patsubst %.c, $(OBJ_PATH)/%.o, $(C_SOURCE_HTTPS))
 CPP_SOURCE_HTTPS	=	$(foreach d, $(SRCDIR_HTTPS), $(wildcard $(d)/*.cpp))
 CPP_OBJECT_HTTPS	=	$(patsubst %.cpp, $(OBJ_PATH)/%.o, $(CPP_SOURCE_HTTPS))
 
-## Final Settint Summary
+# Final Settint Summary
 FLAG				=	$(FLAGS_COMMON) $(FLAGS_HTTP) $(FLAGS_HTTPS)
 # FLAGS += -DUSE_PTHREAD_LOCK
 INCLUDE				=	$(INCLUDE_COMMON) $(INCLUDE_HTTP) $(INCLUDE_HTTPS)
 TARGET				=	$(TARGET_HTTP) $(TARGET_HTTPS)
 SRCDIR				=	$(SRCDIR_COMMON) $(SRCDIR_HTTP) $(SRCDIR_HTTPS)
 
+## all: init && make all target
 all: init $(TARGET)
 $(TARGET_HTTP) : $(C_OBJECT_COMMON) $(C_OBJECT_HTTP) $(CPP_OBJECT_COMMON) $(CPP_OBJECT_HTTP)
 	$(CC) $^ -o $(BIN_PATH)/$(TARGET_HTTP) $(LIBNAME_COMMON) $(LIBNAME_HTTP) $(LIBPATH_COMMON) $(LIBPATH_HTTP)
@@ -65,9 +66,11 @@ $(CPP_OBJECT_HTTP) : $(OBJ_PATH)/%.o : %.cpp
 $(CPP_OBJECT_HTTPS) : $(OBJ_PATH)/%.o : %.cpp
 	$(CC) -c $(FLAG) $(INCLUDE) $< -o $@
 
+## init: make sure the building dirtory is exist
 init:
 	$(foreach d, $(SRCDIR), mkdir -p $(OBJ_PATH)/$(d);)
 
+## info: show variables info
 info:
 	@echo "CC: $(CC)"
 	@echo "OBJECT PATH: $(OBJ_PATH)"
@@ -94,37 +97,39 @@ info:
 	@echo "CPP_OBJECT_HTTPS: $(CPP_OBJECT_HTTPS)"
 	@echo "INCLUDE: $(INCLUDE)"
 
+## help: show the help options
 help:
 	@echo "useage: "
-	@echo " |- init: make build object dir"
-	@echo " |- info: show some make setting detail"
-	@echo " |- http: make http target"
-	@echo " |- https:make https target"
-	@echo " |- all:  make all target [defaule]"
-	@echo " |- rebuild: clean and make"
-	@echo " |- rebuild_http: clean http and make http"
-	@echo " |- rebuild_https: clean https and make https"
+	@cat ./Makefile | sed -n 's/^##//p' | column -t -s ':' | sed -e 's/^/ |-/'
 
+## http: init server_http
 http: init server_http
 
+## https: init server_https
 https: init server_https
 
+## rebuild: clean all
 rebuild: clean all
 
+## rebuild_http: clean_http && server_http
 rebuild_http: clean_http server_http
 
+## rebuild_https: clean_https && server_https
 rebuild_https: clean_https server_https
 
 .PHONE: clean
 
+## clean: clean OBJ_PATH/ && clean BIN_PATH/*
 clean:
 	rm -rf $(OBJ_PATH)
 	rm -rf $(BIN_PATH)/*
 
+## clean_http: clean OBJ_PATH/ && clean BIN_PATH/TARGET_HTTP
 clean_http:
 	rm -rf $(OBJ_PATH)
 	rm -rf $(BIN_PATH)/$(TARGET_HTTP)
 
+## clean_http: clean OBJ_PATH/ && clean BIN_PATH/TARGET_HTTPS
 clean_https:
 	rm -rf $(OBJ_PATH)
 	rm -rf $(BIN_PATH)/$(TARGET_HTTPS)
